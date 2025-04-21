@@ -15,12 +15,12 @@
   {% set grant_config = config.get('grants') %}
 
   -- Making a temp relation
-  {% set temp_relation = make_temp_relation(target_relation, '__dbt_temp') %}
+  {% set temp_relation = make_temp_relation(target_relation, '__dbt_tmp') %}
 
   -- Drop temp relation if it exists before materializing temp relation
   {{ adapter.drop_relation(temp_relation) }}
 
-  {% set tmp_vw_relation = temp_relation.incorporate(path={"identifier": temp_relation.identifier ~ '__dbt_tmp_vw'}, type='view')-%}
+  {% set tmp_vw_relation = temp_relation.incorporate(path={"identifier": temp_relation.identifier ~ '_vw'}, type='view')-%}
 
   {{ adapter.drop_relation(tmp_vw_relation) }}
 
