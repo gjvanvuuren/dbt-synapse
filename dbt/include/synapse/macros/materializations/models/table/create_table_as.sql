@@ -1,5 +1,4 @@
 {% macro synapse__create_table_as(temporary, relation, sql) -%}
-    {% set query_label = apply_label() %}
     {% set tmp_vw_relation = relation.incorporate(path={"identifier": relation.identifier ~ '__dbt_tmp_vw'}, type='view')-%}
     {% do adapter.drop_relation(tmp_vw_relation) %}
     {{ get_create_view_as_sql(tmp_vw_relation, sql) }}
@@ -17,10 +16,9 @@
         {%endset%}
 
         INSERT INTO {{relation}} ({{listColumns}})
-        SELECT {{listColumns}} FROM {{tmp_vw_relation}} {{ query_label }}
+        SELECT {{listColumns}} FROM {{tmp_vw_relation}}
 
     {%- else %}
-        {%- set query_label_option = query_label.replace("'", "''") -%}
-        EXEC('CREATE TABLE {{relation}} AS SELECT * FROM {{tmp_vw_relation}} {{ query_label_option }}');
+        EXEC('CREATE TABLE {{relation}} AS SELECT * FROM {{tmp_vw_relation}}');
     {% endif %}
 {% endmacro %}
