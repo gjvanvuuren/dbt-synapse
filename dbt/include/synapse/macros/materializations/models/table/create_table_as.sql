@@ -2,9 +2,7 @@
     {%- set index = config.get('index', default="CLUSTERED COLUMNSTORE INDEX") -%}
     {%- set dist = config.get('dist', default="ROUND_ROBIN") -%}
 
-    {% set tmp_vw_relation = relation.incorporate(path={"identifier": relation.identifier ~ '__dbt_tmp_vw'}, type='view')-%}
-
-    {% do adapter.drop_relation(tmp_vw_relation) %}
+    {% set tmp_vw_relation = relation.incorporate(path={"identifier": relation.identifier ~ '_vw'}, type='view')-%}
 
     {{ get_create_view_as_sql(tmp_vw_relation, sql) }}
 

@@ -14,7 +14,7 @@
   -- grab current tables grants config for comparision later on
   {% set grant_config = config.get('grants') %}
 
-  -- Making a temp relation
+  -- Making a temp (table) relation
   {% set temp_relation = make_temp_relation(target_relation, '__dbt_tmp') %}
 
   -- Drop temp relation if it exists before materializing temp relation
