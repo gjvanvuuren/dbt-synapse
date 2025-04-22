@@ -1,7 +1,9 @@
 {% materialization materialized_view, adapter='synapse' %}
     {% set existing_relation = load_cached_relation(this) %}
+
     {% set target_relation = this.incorporate(type=this.MaterializedView) %}
     {% set intermediate_relation = make_intermediate_relation(target_relation) %}
+
     {% set backup_relation_type = this.MaterializedView if existing_relation is none else existing_relation.type %}
     {% set backup_relation = make_backup_relation(target_relation, backup_relation_type) %}
 
@@ -29,12 +31,14 @@
     {% set preexisting_backup_relation = load_cached_relation(backup_relation) %}
     {% set preexisting_intermediate_relation = load_cached_relation(intermediate_relation) %}
 
-    they return none
-
     -- drop the temp relations if they exist already in the database
-    {% do adapter.drop_relation(preexisting_backup_relation) %}
-    {% do adapter.drop_relation(preexisting_intermediate_relation) %}
-    
+    {% if (preexisting_backup_relation != none) %}
+        {% do adapter.drop_relation(preexisting_backup_relation) %}
+    {% endif %}
+
+    {% if (preexisting_intermediate_relation != none) %}
+        {% do adapter.drop_relation(preexisting_intermediate_relation) %}
+    {% endif %}
 
     {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
@@ -45,8 +49,13 @@
 
     -- drop the temp relations if they exist to leave the database clean for the next run
 
-    {% do adapter.drop_relation(backup_relation) %}
-    {% do adapter.drop_relation(intermediate_relation) %}
+    {% if (backup_relation != none) %}
+        {% do adapter.drop_relation(backup_relation) %}
+    {% endif %}
+
+    {% if (intermediate_relation != none) %}
+        {% do adapter.drop_relation(intermediate_relation) %}
+    {% endif %}
 
     {{ run_hooks(post_hooks, inside_transaction=False) }}
 
