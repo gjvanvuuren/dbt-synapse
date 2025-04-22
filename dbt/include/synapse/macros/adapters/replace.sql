@@ -42,7 +42,6 @@
 
     {# /* no renaming is allowed, so just drop and create */ #}
     {%- else -%}
-        {{ synapse__drop_relation(existing_relation) }};
         {% do adapter.drop_relation(existing_relation) %}
         {{ get_create_sql(target_relation, sql) }}
 
